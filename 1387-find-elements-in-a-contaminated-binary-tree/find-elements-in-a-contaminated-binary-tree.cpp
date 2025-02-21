@@ -1,27 +1,27 @@
-
 class FindElements {
-    unordered_set<int> recoveredValues;
+public:
+    unordered_map<int, bool> mp;
 
-    void recoverTree(TreeNode* root) {
-        if (!root) return;
-        recoveredValues.insert(root->val);
+    void recover(TreeNode* root) {
         if (root->left) {
-            root->left->val = 2 * root->val + 1;
-            recoverTree(root->left);
+            root->left->val = root->val * 2 + 1;
+            mp[root->left->val] = true;
+            recover(root->left);
         }
         if (root->right) {
-            root->right->val = 2 * root->val + 2;
-            recoverTree(root->right);
+            root->right->val = root->val * 2 + 2;
+            mp[root->right->val] = true;
+            recover(root->right);
         }
     }
 
-public:
     FindElements(TreeNode* root) {
         root->val = 0;
-        recoverTree(root);
+        mp[0] = true;
+        recover(root);
     }
-
+    
     bool find(int target) {
-        return recoveredValues.count(target);
+        return mp[target];
     }
 };
