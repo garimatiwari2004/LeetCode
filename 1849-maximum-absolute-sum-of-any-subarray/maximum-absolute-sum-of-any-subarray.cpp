@@ -1,15 +1,16 @@
 class Solution {
 public:
     int maxAbsoluteSum(vector<int>& nums) {
-        int posSum=0, negSum=0, maxPos=0, maxNeg=0;
-        for(int i=0; i<nums.size(); i++) {
-            posSum += nums[i];
-            negSum += nums[i];
-            if(posSum < 0) posSum = 0;
-            if(negSum > 0) negSum = 0;
-            maxPos = max(maxPos, posSum);
-            maxNeg = max(maxNeg, abs(negSum));
+        int minPrefixSum = 0, maxPrefixSum = 0;
+
+        int prefixSum = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            prefixSum += nums[i];
+
+            minPrefixSum = min(minPrefixSum, prefixSum);
+            maxPrefixSum = max(maxPrefixSum, prefixSum);
         }
-        return max(maxPos, maxNeg);
+
+        return maxPrefixSum - minPrefixSum;
     }
 };
