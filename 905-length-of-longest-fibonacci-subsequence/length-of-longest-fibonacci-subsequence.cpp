@@ -1,26 +1,34 @@
+int dp[1000][1000];
 class Solution {
 public:
     int lenLongestFibSubseq(vector<int>& arr) {
-        int n = arr.size();
-        vector<vector<int>> dp(n, vector<int>(n, 0));
-        int maxLen = 0;
-
-        for (int curr = 2; curr < n; curr++) {
-            int start = 0, end = curr - 1;
-            while (start < end) {
-                int pairSum = arr[start] + arr[end];
-                if (pairSum > arr[curr]) {
-                    end--;
-                } else if (pairSum < arr[curr]) {
-                    start++;
-                } else {
-                    dp[end][curr] = dp[start][end] + 1;
-                    maxLen = max(dp[end][curr], maxLen);
-                    end--;
-                    start++;
+        const int n=arr.size();
+        fill(&dp[0][0], &dp[0][0]+n*1000, 2);
+        int ans=0;
+      
+        // compute DP
+       for (int i1=1; i1<n-1; i1++) {
+            int f1=arr[i1];
+            for (int i2=i1+1; i2<n; i2++) {
+                int f2=arr[i2];
+                int f0=f2-f1;  // Fibonacci first term
+                if (f0>=f1) break; // impossible for tuple (f0, f1, f2)
+                int i0=lower_bound(arr.begin(), arr.begin()+i1, f0)-arr.begin();
+                if (i0<i1 && f0==arr[i0]) {  // Found
+                    dp[i1][i2]=dp[i0][i1]+1;
                 }
+
+                ans=max(ans, dp[i1][i2]);  // Track the maximum length
             }
         }
-        return maxLen == 0 ? 0 : maxLen + 2;
+
+        return ans>2?ans:0;  // sequences of length >= 3
     }
 };
+
+auto init = []() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cout.tie(nullptr);
+    return 'c';
+}();
