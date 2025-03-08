@@ -1,21 +1,19 @@
 class Solution {
 public:
     int maxArea(vector<int>& height) {
-        int left = 0;
-        int right = height.size() - 1;
+        int n = height.size();
+        int i = 0, j = n - 1;
         int maxArea = 0;
-
-        while (left < right) {
-            int currentArea = min(height[left], height[right]) * (right - left);
-            maxArea = max(maxArea, currentArea);
-
-            if (height[left] < height[right]) {
-                left++;
-            } else {
-                right--;
-            }
+        
+        while (i < j) {
+            int w = j - i;
+            int h1 = height[i], h2 = height[j];
+            int h = min(h1, h2);
+            maxArea = max(maxArea, h * w);
+            // Greedily moving Pointers
+            h1 > h2 ? j-- : i++;
         }
-
+        
         return maxArea;
     }
 };
