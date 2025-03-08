@@ -1,10 +1,10 @@
 class Solution {
 public:
     int longestOnes(vector<int>& nums, int k) {
-        int maxflips=0;
         int left=0;
+        int maxlength=0;
         int count=0;
-        for(int right=0;right<nums.size();++right){
+        for(int right=0;right<nums.size();right++){
             if(nums[right]==0){
                 count++;
             }
@@ -14,10 +14,8 @@ public:
                 }
                 left++;
             }
-            maxflips=max(maxflips,right-left+1);
-
+            maxlength=max(maxlength,right-left+1);
         }
-return maxflips;
-        
+        return maxlength;
     }
 };
