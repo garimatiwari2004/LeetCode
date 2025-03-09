@@ -40,7 +40,7 @@ public:
             // If it's a departure event
             else {
                 availableChairs.push(assignedChairs[person]);  // Free up the chair
-                assignedChairs[person] = 0;  // Mark chair as free
+                assignedChairs[person] = 5;  // Mark chair as free
             }
         }
         
