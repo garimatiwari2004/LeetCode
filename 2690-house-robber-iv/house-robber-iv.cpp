@@ -1,32 +1,31 @@
 class Solution {
 public:
-    bool canRobWithCapability(vector<int>& nums, int k, int capability) {
+    bool canRob(vector<int>& nums, int k, int C) {
         int count = 0;
         int n = nums.size();
         for (int i = 0; i < n; i++) {
-            if (nums[i] <= capability) {
+            if (nums[i] <= C) {
                 count++;
-                i++;  // Skip the next house since adjacent houses cannot be robbed
+                i++;  // Skip adjacent house
             }
-            if (count >= k) return true;  // We successfully picked at least k houses
         }
-        return false;
+        return count >= k;
     }
 
     int minCapability(vector<int>& nums, int k) {
         int low = *min_element(nums.begin(), nums.end());
         int high = *max_element(nums.begin(), nums.end());
-        int ans = high;
 
-        while (low <= high) {
+        while (low < high) {
             int mid = low + (high - low) / 2;
-            if (canRobWithCapability(nums, k, mid)) {
-                ans = mid;  // Store the best possible capability
-                high = mid - 1;  // Try to minimize further
-            } else {
-                low = mid + 1;
-            }
+
+            if (canRob(nums, k, mid))
+                high = mid;  // Try lowering the capability
+            else
+                low = mid + 1;  // Increase capability
         }
-        return ans;
+
+        return low;  // The smallest valid capability
     }
 };
+
