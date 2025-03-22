@@ -7,6 +7,10 @@ public:
         int ans=INT_MAX;
         while(low<=high){
             int mid=low+(high-low)/2;
+            if (nums[low] <= nums[high]) {
+            ans = min(ans, nums[low]);
+            break;
+        }
             if(nums[mid]>=nums[low]){
                 ans=min(nums[low],ans);
                 low=mid+1;
