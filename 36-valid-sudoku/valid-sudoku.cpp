@@ -1,27 +1,45 @@
 class Solution {
 public:
     bool isValidSudoku(vector<vector<char>>& board) {
-        unordered_set<int> row[9], col[9], box[9];
+     for(int row=0;row<9;row++){
+        for(int col=0;col<9;col++){
+            if(board[row][col]!='.'){
+     char dig=board[row][col];
+             
 
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                char num = board[i][j];
-                if (num == '.') continue;  // Skip empty cells
-                
-                int n = num - '0';  // Convert character to integer
-                int boxIndex = (i / 3) * 3 + (j / 3); // Compute sub-box index
+                //horizontal check
 
-                // Check if the number is already seen
-                if (row[i].count(n) || col[j].count(n) || box[boxIndex].count(n)) {
-                    return false;
+                for(int k=0;k<9;k++){
+                    if(board[row][k]==dig && k!=col){
+                        return false;
+                    }
                 }
 
-                // Insert the number into respective row, column, and sub-box
-                row[i].insert(n);
-                col[j].insert(n);
-                box[boxIndex].insert(n);
+
+                //vertical check
+                for(int k=0;k<9;k++){
+                    if(board[k][col]==dig && k!=row){
+                        return false;
+                    }
+                }
+
+
+
+                //grid check
+                int srow=(row/3)*3;
+                int scol=(col/3)*3;
+                for(int a=srow;a<srow+3;a++){
+                    for(int b=scol;b<scol+3;b++){
+                        if( (a!=row || b!=col) && board[a][b]==dig){
+                            return false;
+                        }
+                    }
+                }
+
+
             }
         }
-        return true;
+     }
+     return true;
     }
 };
