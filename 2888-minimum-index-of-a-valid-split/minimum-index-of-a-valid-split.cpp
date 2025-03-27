@@ -1,37 +1,40 @@
-#include <vector>
-#include <unordered_map>
-using namespace std;
-
 class Solution {
+    int mooresVotingAlgo(vector<int>& nums){
+        int majority_element = nums[0];
+        int freq = 1;
+        for(int i=1;i<nums.size();++i){
+            if(nums[i]!=majority_element)   freq--;
+            else                            freq++;
+            
+            if(freq==0){
+                majority_element = nums[i];
+                freq = 1;
+            }
+        }
+        return majority_element;
+    }
 public:
     int minimumIndex(vector<int>& nums) {
-        unordered_map<int, int> freq;
-        int dom = 0, count = 0, n = nums.size();
+        int n=nums.size();
+        //Step-1: Find Majority element
+        int majority_element = mooresVotingAlgo(nums);
 
-        for (int num : nums) {
-            freq[num]++;
-        }
+        //Step-2: Count frequency of majority_element
+        int max_freq = 0;
+        for(int i=0;i<n;++i)
+            if(nums[i]==majority_element)
+                max_freq++;
 
-        for (auto& [num, c] : freq) {
-            if (c > n / 2) {
-                dom = num;
-                count = c;
-                break;
+        //Step-3: Now find minimum valid split
+        int prefix_count = 0;
+        for(int i=0;i<n-1;++i){
+            if(nums[i]==majority_element){
+                prefix_count++;
+                max_freq--;
             }
-        }
-
-        int leftCount = 0;
-        for (int i = 0; i < n - 1; i++) {
-            if (nums[i] == dom) leftCount++;
-            int leftSize = i + 1;
-            int rightSize = n - leftSize;
-            int rightCount = count - leftCount;
-
-            if (leftCount > leftSize / 2 && rightCount > rightSize / 2) {
+            if((prefix_count > (i+1)/2) and (max_freq > (n-i-1)/2))
                 return i;
-            }
         }
-
         return -1;
     }
 };
