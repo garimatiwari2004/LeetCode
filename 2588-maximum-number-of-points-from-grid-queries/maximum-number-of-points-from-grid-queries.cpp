@@ -1,51 +1,81 @@
-#include <vector>
-#include <queue>
-#include <unordered_map>
-using namespace std;
+#include <ranges>
+
+static auto init = []() {
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
+  return nullptr;
+}();
 
 class Solution {
 public:
-    vector<int> maxPoints(vector<vector<int>>& grid, vector<int>& queries) {
-        int m = grid.size(), n = grid[0].size();
-        vector<int> sortedQueries = queries;
-        sort(sortedQueries.begin(), sortedQueries.end());
-        unordered_map<int, int> queryResult;
-        vector<int> answer(queries.size());
+  vector<int> maxPoints(vector<vector<int>>& grid, vector<int>& queries) {
+    auto ans = vector<int>(size(queries));
 
-        vector<vector<int>> directions = {{0,1}, {0,-1}, {1,0}, {-1,0}};
-        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> minHeap;
-        unordered_set<string> visited;
-
-        minHeap.push({grid[0][0], 0, 0});
-        visited.insert("0,0");
-
-        int points = 0;
-
-        for (int query : sortedQueries) {
-            while (!minHeap.empty() && minHeap.top()[0] < query) {
-                vector<int> cell = minHeap.top();
-                minHeap.pop();
-                int val = cell[0], r = cell[1], c = cell[2];
-
-                points++;
-
-                for (auto& dir : directions) {
-                    int nr = r + dir[0], nc = c + dir[1];
-                    string key = to_string(nr) + "," + to_string(nc);
-
-                    if (nr >= 0 && nr < m && nc >= 0 && nc < n && !visited.count(key)) {
-                        visited.insert(key);
-                        minHeap.push({grid[nr][nc], nr, nc});
-                    }
-                }
-            }
-            queryResult[query] = points;
-        }
-
-        for (int i = 0; i < queries.size(); i++) {
-            answer[i] = queryResult[queries[i]];
-        }
-
-        return answer;
+    if (ranges::all_of(queries, [start=grid[0][0]](auto query) {
+                                  return query <= start; })) {
+      return ans;
     }
+
+    auto sorted_query_indexes = vector<pair<int, int>>{};
+    sorted_query_indexes.reserve(size(queries));
+    for (auto [i, query] : views::enumerate(queries)) {
+      sorted_query_indexes.emplace_back(query, i);
+    }
+    ranges::sort(sorted_query_indexes);
+
+    auto q = queue<pair<int, int>>{};
+    auto frontier = priority_queue(greater{},
+      vector<tuple<int, int, int>>{{grid[0][0], 0, 0}});
+    grid[0][0] = 0;
+    auto score = 0;
+    auto m = size(grid);
+    auto n = size(grid[0]);
+
+    for (auto [query, query_idx] : sorted_query_indexes) {
+      while (!empty(frontier) && get<0>(frontier.top()) < query) {
+        auto [_, i, j] = frontier.top();
+        frontier.pop();
+        q.emplace(i, j);
+      }
+      while (!empty(q)) {
+        auto [i, j] = q.front();
+        q.pop();
+        ++score;
+        if (i > 0 && grid[i - 1][j]) {
+          if (grid[i - 1][j] < query) {
+            q.emplace(i - 1, j);
+          } else {
+            frontier.emplace(grid[i - 1][j], i - 1, j);
+          }
+          grid[i - 1][j] = 0;
+        }
+        if (i < m - 1 && grid[i + 1][j]) {
+          if (grid[i + 1][j] < query) {
+            q.emplace(i + 1, j);
+          } else {
+            frontier.emplace(grid[i + 1][j], i + 1, j);
+          }
+          grid[i + 1][j] = 0;
+        }
+        if (j > 0 && grid[i][j - 1]) {
+          if (grid[i][j - 1] < query) {
+            q.emplace(i, j - 1);
+          } else {
+            frontier.emplace(grid[i][j - 1], i, j - 1);
+          }
+          grid[i][j - 1] = 0;
+        }
+        if (j < n - 1 && grid[i][j + 1]) {
+          if (grid[i][j + 1] < query) {
+            q.emplace(i, j + 1);
+          } else {
+            frontier.emplace(grid[i][j + 1], i, j + 1);
+          }
+          grid[i][j + 1] = 0;
+        }
+      }
+      ans[query_idx] = score;
+    }
+    return ans;
+  }
 };
