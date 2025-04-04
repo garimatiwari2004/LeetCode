@@ -1,20 +1,22 @@
 class Solution {
 public:
-    pair<int, TreeNode*> helper(TreeNode* node) {
-        if (!node) return {0, nullptr};
-
-        auto left = helper(node->left);
-        auto right = helper(node->right);
-
-        if (left.first == right.first)
-            return {left.first + 1, node};
-        else if (left.first > right.first)
-            return {left.first + 1, left.second};
-        else
-            return {right.first + 1, right.second};
+    TreeNode* lcaDeepestLeaves(TreeNode* root) {
+        int maxi = maxDepth(root); // maxi is the max depth 
+        return dfs(root, maxi, 0);
     }
 
-    TreeNode* lcaDeepestLeaves(TreeNode* root) {
-        return helper(root).second;
+    TreeNode* dfs(TreeNode* root, int maxi, int len) {
+        if (!root) return nullptr;  
+        if (maxi - 1 == len) return root;
+        TreeNode* left = dfs(root->left, maxi, len + 1);
+        TreeNode* right = dfs(root->right, maxi, len + 1);
+        
+        if (left && right) return root;
+        return left ? left : right;
+    }
+
+    int maxDepth(TreeNode* root) {
+        if (!root) return 0;
+        return 1 + max(maxDepth(root->left), maxDepth(root->right));
     }
 };
